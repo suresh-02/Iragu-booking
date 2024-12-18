@@ -23,6 +23,7 @@ func main() {
 
 	// Define routes
 	router.HandleFunc("/newUser", handlers.SignUp).Methods(http.MethodPost)
+	router.HandleFunc("/login", handlers.Login).Methods(http.MethodPost)
 
 	// Start the server
 	log.Println("Server running on http://localhost:8082")

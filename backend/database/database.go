@@ -14,7 +14,7 @@ func Connect() {
 	// -- open items
 	// need to get these creds from env 
 
-	dsn := "root:Suresh02!@tcp(localhost:3306)/sys"
+	dsn := "root:Suresh02!@tcp(localhost:3306)/sys?parseTime=true"
 
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {

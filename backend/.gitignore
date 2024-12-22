@@ -1,2 +1,2 @@
-./gomod
-./.env
+# Ignore environment files
+.env

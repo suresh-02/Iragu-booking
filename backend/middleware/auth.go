@@ -22,7 +22,7 @@ func Validate(next http.Handler) http.Handler {
 		// Retrieve the auth token from cookies
 		tokenCookie, err := r.Cookie("auth_token")
 		if err != nil {
-			http.Error(w, "Invalid Email ssor Password", http.StatusUnauthorized)
+			http.Error(w, "Invalid Email or Password", http.StatusUnauthorized)
 			return
 		}
 
@@ -41,14 +41,14 @@ func Validate(next http.Handler) http.Handler {
 		})
 
 		if err != nil || !token.Valid {
-			http.Error(w, "Invalid Emailss or Password", http.StatusUnauthorized)
+			http.Error(w, "Invalid Email or Password", http.StatusUnauthorized)
 			return
 		}
 
 		// Extract claims
 		claims, ok := token.Claims.(jwt.MapClaims)
 		if !ok || !token.Valid {
-			http.Error(w, "Invalid Emailss or Password", http.StatusUnauthorized)
+			http.Error(w, "Invalid Email or Password", http.StatusUnauthorized)
 			return
 		}
 
@@ -63,7 +63,7 @@ func Validate(next http.Handler) http.Handler {
 		database.DB.First(&user, claims["sub"])
 
 		if user.ID == 0 {
-			http.Error(w, "Invalid Email ssor Password", http.StatusUnauthorized)
+			http.Error(w, "Invalid Email or Password", http.StatusUnauthorized)
 			return
 		}
 

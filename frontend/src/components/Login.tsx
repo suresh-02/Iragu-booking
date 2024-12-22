@@ -1,17 +1,32 @@
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import loginImage from "../assets/loginImage.svg";
+import { createUser, loginUser } from "../api/authApi";
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
+    username: "",
     email: "",
     password: "",
   });
+  const [message, setMessage] = useState("");
+  const [signUp, setSignUp] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Form submitted:", formData);
+    try {
+      if (signUp) {
+        const response = await createUser(formData);
+        setMessage(() => response.message);
+        return;
+      }
+      const response = await loginUser(formData);
+      setMessage(() => response.message);
+      return;
+    } catch (err) {
+      setMessage(() => "Error Occured");
+    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -21,10 +36,16 @@ const Login = () => {
     });
   };
 
+  const isSignIn = (event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+    event.preventDefault();
+    setSignUp((prevState) => !prevState);
+    return signUp;
+  };
+
   return (
     <div className="min-h-screen flex flex-col lg:flex-row">
       {/* Left Column - Image */}
-      <div className="lg:w-1/2 bg-green-50">
+      <div className="w-1/2 bg-green-50 hidden md:block">
         <div className="h-full flex items-center justify-center p-8">
           <img
             src={loginImage}
@@ -38,12 +59,48 @@ const Login = () => {
       <div className="lg:w-1/2 flex items-center justify-center p-8">
         <div className="max-w-md w-full space-y-8">
           <div className="text-center">
-            <h2 className="text-3xl font-bold text-gray-900">Welcome Back</h2>
-            <p className="mt-2 text-gray-600">Please sign in to your account</p>
+            {signUp ? (
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">Welcome..!</h2>
+                <p className="mt-2 text-gray-600">Please Create your account</p>
+              </div>
+            ) : (
+              <div>
+                <h2 className="text-3xl font-bold text-gray-900">
+                  Welcome Back..!
+                </h2>
+                <p className="mt-2 text-gray-600">
+                  Please sign in to your account
+                </p>
+              </div>
+            )}
           </div>
 
           <form onSubmit={handleSubmit} className="mt-8 space-y-6">
             <div className="space-y-4">
+              {signUp ? (
+                <div>
+                  <label
+                    htmlFor="email"
+                    className="block text-start font-bold text-sm  text-gray-700"
+                  >
+                    Username
+                  </label>
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    value={formData.username}
+                    onChange={handleChange}
+                    className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+                    placeholder="Enter your email"
+                  />
+                </div>
+              ) : (
+                ""
+              )}
+
               <div>
                 <label
                   htmlFor="email"
@@ -110,26 +167,52 @@ const Login = () => {
             </div>
 
             <div>
-              <button
-                type="submit"
-                className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-400 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-              >
-                Sign in
-              </button>
+              {signUp ? (
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-400 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Create Account
+                </button>
+              ) : (
+                <button
+                  type="submit"
+                  className="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-400 hover:bg-green-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+                >
+                  Log in
+                </button>
+              )}
             </div>
 
-            <div className="text-center">
-              <p className="text-sm text-gray-600">
-                Don't have an account?{" "}
-                <a
-                  href="#"
-                  className="font-medium text-green-600 hover:text-green-500"
-                >
-                  Sign up
-                </a>
-              </p>
-            </div>
+            {!signUp ? (
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Don't have an account?{" "}
+                  <a
+                    href="#"
+                    onClick={isSignIn}
+                    className="font-medium text-green-600 hover:text-green-500"
+                  >
+                    Sign up
+                  </a>
+                </p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <p className="text-sm text-gray-600">
+                  Already have an account?{" "}
+                  <a
+                    href="#"
+                    onClick={() => setSignUp(() => false)}
+                    className="font-medium text-green-600 hover:text-green-500"
+                  >
+                    Log In
+                  </a>
+                </p>
+              </div>
+            )}
           </form>
+          <p className="mt-2 text-gray-600">{message}</p>
         </div>
       </div>
     </div>

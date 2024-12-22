@@ -25,7 +25,7 @@ func main() {
 	// Define routes
 	router.HandleFunc("/register", handlers.Register).Methods(http.MethodPost)
 	router.HandleFunc("/login", handlers.Login).Methods(http.MethodPost)
-	router.HandleFunc("/validate", middleware.Validate).Methods(http.MethodPost)
+	router.Handle("/login", middleware.Validate(http.HandlerFunc(handlers.Login))).Methods(http.MethodPost)
 
 	// Start the server
 	log.Println("Server running on http://localhost:8082")

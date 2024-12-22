@@ -30,7 +30,7 @@ func main() {
 	// Initialize the router
 
 	// Define routes
-	router.HandleFunc("/register", handlers.Register).Methods(http.MethodPost
+	router.HandleFunc("/register", handlers.Register).Methods(http.MethodPost)
 	router.Handle("/login", middleware.Validate(http.HandlerFunc(handlers.Login))).Methods(http.MethodPost)
 
 	// Start the server

@@ -103,4 +103,8 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		MaxAge:   3600,
 	})
 
+	w.WriteHeader(http.StatusAccepted)
+	json.NewEncoder(w).Encode(map[string]string{
+		"message": "logged in",
+	})
 }

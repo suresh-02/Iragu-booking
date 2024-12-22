@@ -23,7 +23,7 @@ func main() {
 	// Initialize the router
 
 	// Define routes
-	router.HandleFunc("/newUser", handlers.SignUp).Methods(http.MethodPost)
+	router.HandleFunc("/register", handlers.Register).Methods(http.MethodPost)
 	router.HandleFunc("/login", handlers.Login).Methods(http.MethodPost)
 	router.HandleFunc("/validate", middleware.Validate).Methods(http.MethodPost)
 

@@ -31,7 +31,7 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	// Hash the password
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(signupBody.Password), 10)
 	if err != nil {
-		http.Error(w, "Failed to create hashed password", http.StatusInternalServerError)
+		http.Error(w, "Invalid Email or Password", http.StatusInternalServerError)
 		return
 	}
 
@@ -45,14 +45,14 @@ func SignUp(w http.ResponseWriter, r *http.Request) {
 	// Save the user to the database
 	result := database.DB.Create(&signupUser)
 	if result.Error != nil {
-		http.Error(w, "Error creating user", http.StatusBadRequest)
+		http.Error(w, "Invalid Email or Password", http.StatusInternalServerError)
 		return
 	}
 
 	// Send a success response
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{
-		"message": "User created successfully",
+		"message": "User created susfullycces",
 	})
 }
 
@@ -70,7 +70,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	database.DB.First(&user, "email=?", loginBody.Email)
 
 	if user.ID == 0 {
-		http.Error(w, "No user found", http.StatusBadRequest)
+		http.Error(w, "Invalid Email or Password", http.StatusInternalServerError)
 		return
 	}
 
@@ -78,26 +78,30 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	// http.Error(w, user.Password, http.StatusAccepted)
 	err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(loginBody.Password))
 	if err != nil {
-		http.Error(w, "Invalid password", http.StatusForbidden)
+		http.Error(w, "Invalid Email or Password", http.StatusForbidden)
 		return
 	}
 
 	//  generate a JWT token
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
-        "sub": user.ID,
-        "exp": time.Now().Add(time.Hour).Unix(),
-    })
+		"sub": user.ID,
+		"exp": time.Now().Add(time.Hour).Unix(),
+	})
 
-    tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
-    if err != nil {
-        http.Error(w, "Error generating JWT token", http.StatusInternalServerError)
-        return
-    }
+	tokenString, err := token.SignedString([]byte(os.Getenv("SECRET")))
+	if err != nil {
+		http.Error(w, "Invalid Email or Password", http.StatusInternalServerError)
+		return
+	}
 
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(map[string]string{
-        "token": tokenString,
-    })
+	http.SetCookie(w, &http.Cookie{
+		Name:     "auth_token",
+		Value:    tokenString,
+		HttpOnly: true,
+		Secure:   true,
+		MaxAge:   3600, 
+	})
+	
 
 }

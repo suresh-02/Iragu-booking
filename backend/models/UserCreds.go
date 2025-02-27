@@ -7,4 +7,5 @@ type UserCreds struct {
 	Username string `gorm:"not null"`
 	Password string `gorm:"not null"`
 	Email    string `gorm:"unique"`
+	IsAdmin  bool   `gorm:"not null;default:0"`
 }

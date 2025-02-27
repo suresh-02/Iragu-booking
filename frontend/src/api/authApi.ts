@@ -11,7 +11,7 @@ interface loginUserPayload {
   password: string;
 }
 
-export const createUser = async (payload: CreateUserPayload) => {
+export const createUser = async (payload: CreateUserPayload): Promise<any | string>  => {
   try {
     const response = await createApiSession.post("/register", payload);
     return response.data;
@@ -21,7 +21,7 @@ export const createUser = async (payload: CreateUserPayload) => {
   }
 };
 
-export const loginUser = async (payload: loginUserPayload) => {
+export const loginUser = async (payload: loginUserPayload): Promise<any | string>   => {
   try {
     const response = await createApiSession.post("/login", payload);
     return response.data;
